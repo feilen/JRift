@@ -5,7 +5,7 @@ Content     :   Platform-independent app and rendering framework for Oculus samp
 Created     :   September 6, 2012
 Authors     :   Andrew Reisse
 
-Copyright   :   Copyright 2012 Oculus VR, Inc. All Rights reserved.
+Copyright   :   Copyright 2012 Oculus VR, LLC All Rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ public:
     // Get time since start of application in seconds.
     double				GetAppTime() const; 
     
-    virtual String		GetContentDirectory() const { return "."; }
+    virtual std::string		GetContentDirectory() const { return "."; }
 
     // Creates notification overlay text box over the top of OS window. Multiple
     // messages can be created with different 'index' values. Pass null string

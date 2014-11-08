@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "OVR_CAPI_GL.h"
+#include <Kernel/OVR_Log.h>
+#include "../Samples/CommonSrc/Platform/Gamepad.h"
 #include "../Samples/CommonSrc/Platform/Platform_Default.h"
 
 using namespace OVR;
@@ -18,6 +20,7 @@ bool                _renderConfigured = false;
 bool                _realDevice = false;
 ovrPosef            _eyeRenderPose[2];
 ovrGLTexture        _GLEyeTexture[2];
+bool SetupWindowAndRendering();
 
 // Direct mode proto
 OVR::Render::RenderDevice*      _pRender   = 0;
@@ -452,7 +455,7 @@ JNIEXPORT jobject JNICALL Java_de_fruitfly_ovr_OculusRift__1configureRendering(
     cfg.OGL.Window = (HWND)(intptr_t)Win;
 	cfg.OGL.DC     = ::GetDC(cfg.OGL.Window);
 #elif defined(OVR_OS_LINUX)
-    cfg.OGL.Disp   = (Display*)(intptr_t)Displ;
+    cfg.OGL.Disp   = (_XDisplay*)(intptr_t)Displ;
     cfg.OGL.Win    = (Window)(intptr_t)Win;
 #endif
 	 
@@ -529,9 +532,9 @@ JNIEXPORT jobject JNICALL Java_de_fruitfly_ovr_OculusRift__1configureRendering(
                                            EyeRenderDesc[0].DistortedViewport.Size.h,
                                            EyeRenderDesc[0].PixelsPerTanAngleAtCenter.x,
                                            EyeRenderDesc[0].PixelsPerTanAngleAtCenter.y,
-                                           EyeRenderDesc[0].ViewAdjust.x,
-                                           EyeRenderDesc[0].ViewAdjust.y,
-                                           EyeRenderDesc[0].ViewAdjust.z,
+                                           EyeRenderDesc[0].HmdToEyeViewOffset.x,
+                                           EyeRenderDesc[0].HmdToEyeViewOffset.y,
+                                           EyeRenderDesc[0].HmdToEyeViewOffset.z,
                                            EyeRenderDesc[1].Eye,
                                            EyeRenderViewport[1].Pos.x,
                                            EyeRenderViewport[1].Pos.y,
@@ -547,9 +550,9 @@ JNIEXPORT jobject JNICALL Java_de_fruitfly_ovr_OculusRift__1configureRendering(
                                            EyeRenderDesc[1].DistortedViewport.Size.h,
                                            EyeRenderDesc[1].PixelsPerTanAngleAtCenter.x,
                                            EyeRenderDesc[1].PixelsPerTanAngleAtCenter.y,
-                                           EyeRenderDesc[1].ViewAdjust.x,
-                                           EyeRenderDesc[1].ViewAdjust.y,
-                                           EyeRenderDesc[1].ViewAdjust.z
+                                           EyeRenderDesc[1].HmdToEyeViewOffset.x,
+                                           EyeRenderDesc[1].HmdToEyeViewOffset.y,
+                                           EyeRenderDesc[1].HmdToEyeViewOffset.z
 										);
 
     return eyeRenderDesc;
@@ -603,7 +606,9 @@ JNIEXPORT jobject JNICALL Java_de_fruitfly_ovr_OculusRift__1getEyePose(JNIEnv *e
     if (Eye > 0)
         eye = ovrEye_Right;
 
-    _eyeRenderPose[eye] = ovrHmd_GetEyePose(_pHmd, eye);
+#warning ovr_GetHmdPosePerEye is deprecated. Prefer ovrHmd_GetEyePoses
+
+    _eyeRenderPose[eye] = ovrHmd_GetHmdPosePerEye(_pHmd, eye);
 
 	jobject jposef = env->NewObject(posef_Class, posef_constructor_MethodID,
                                     _eyeRenderPose[eye].Orientation.x,

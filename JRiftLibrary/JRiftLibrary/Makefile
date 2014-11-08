@@ -76,7 +76,7 @@ libJRiftLibrary.jnilib: JRiftLibrary.o ${OCULUS_SDK}/LibOVR/OSX/Release/i386/lib
 		-L ${OCULUS_SDK}/LibOVR/Lib/OSX/Release/i386/ \
 		-o $@ \
 		JRiftLibrary.o \
-		-lovr
+		-lOculusVR
 
 libJRiftLibrary64.jnilib: JRiftLibrary64.o ${OCULUS_SDK}/LibOVR/Lib/OSX/Release/x86_64/libOVR.a 
 	g++ \
@@ -89,7 +89,7 @@ libJRiftLibrary64.jnilib: JRiftLibrary64.o ${OCULUS_SDK}/LibOVR/Lib/OSX/Release/
 		-L ${OCULUS_SDK}/LibOVR/Lib/OSX/Release/x86_64/ \
 		-o $@ \
 		JRiftLibrary64.o \
-		-lovr
+		-lOculusVR
 
 ${OCULUS_SDK}/LibOVR/Lib/OSX/Release/x86_64/libOVR.a:
 	make ARCH=64 -C ${OCULUS_SDK}/LibOVR
@@ -99,7 +99,7 @@ ${OCULUS_SDK}/LibOVR/OSX/Release/i386/libOVR.a :
 else
 ifeq ($(UNAME), Linux)
 
-LINUX_JDK_HOME:=/usr/lib/jvm/default-java
+LINUX_JDK_HOME:=/usr/lib/jvm/java-7-openjdk/
 #LINUX_JDK_HOME:=/usr/lib/jvm/java-6-openjdk-amd64
 
 all: libJRiftLibrary64.so libJRiftLibrary.so
@@ -114,6 +114,7 @@ JRiftLibrary.o: JRiftLibrary.cpp
 	-fPIC \
 	-fno-rtti \
 	"-I${LINUX_JDK_HOME}/include/" \
+	"-I${LINUX_JDK_HOME}/include/linux" \
 	"-I${OCULUS_SDK}/LibOVR/Include" \
 	"-I${OCULUS_SDK}/LibOVR/Src" \
 	-c $< \
@@ -125,6 +126,7 @@ JRiftLibrary64.o: JRiftLibrary.cpp
 	-fPIC \
 	-fno-rtti \
 	"-I${LINUX_JDK_HOME}/include/" \
+	"-I${LINUX_JDK_HOME}/include/linux" \
 	"-I${OCULUS_SDK}/LibOVR/Include" \
 	"-I${OCULUS_SDK}/LibOVR/Src" \
 	-c $< \
@@ -137,9 +139,10 @@ libJRiftLibrary.so: JRiftLibrary.o ${OCULUS_SDK}/LibOVR/Linux/Release/i386/libOV
 		-shared \
 		-o $@ \
 		"-I${LINUX_JDK_HOME}/include/" \
+		"-I${LINUX_JDK_HOME}/include/linux" \
 		-L ${OCULUS_SDK}/LibOVR/Lib/Linux/Release/i386/ \
 		$< \
-		-lovr -ludev -lXinerama
+		-lOculusVR -ludev -lXinerama
 
 libJRiftLibrary64.so: JRiftLibrary64.o ${OCULUS_SDK}/LibOVR/Lib/Linux/Release/x86_64/libOVR.a 
 	g++ \
@@ -148,9 +151,10 @@ libJRiftLibrary64.so: JRiftLibrary64.o ${OCULUS_SDK}/LibOVR/Lib/Linux/Release/x8
 		-shared \
 		-o $@ \
 		"-I${LINUX_JDK_HOME}/include/" \
+		"-I${LINUX_JDK_HOME}/include/linux" \
 		-L ${OCULUS_SDK}/LibOVR/Lib/Linux/Release/x86_64/ \
 		$< \
-		-lovr -ludev -lXinerama
+		-lOculusVR -ludev -lXinerama
 
 ${OCULUS_SDK}/LibOVR/Lib/Linux/Release/x86_64/libOVR.a:
 	make ARCH=64 -C ${OCULUS_SDK}/LibOVR
